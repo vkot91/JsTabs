@@ -31,7 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
   //Timer
-  let deadline = "2020-04-30";
+  let deadline = "2020-05-30";
 
   // new Date = date today
   const getTimeRemaining = (endtime) => {
@@ -43,7 +43,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // Hours in 24-hours format
     // hours = Math.floor((t / 1000 / 60 / 60) % 24);
     // days = Math.floor(t / (1000 * 60 * 60 * 24));
-    console.log(hours);
+
     return {
       total: t,
       hours,
@@ -96,4 +96,34 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   };
   setClock(deadline);
+
+  /* Modal Window */
+  let moreBtn = document.querySelector(".more"),
+    overlay = document.querySelector(".overlay"),
+    closeBtn = document.querySelector(".popup-close");
+
+  //Modal Show
+  function showPopup() {
+    overlay.style.display = "block";
+    this.classList.add("more-splash");
+    //Запрет прокрутки страницы
+    document.body.style.overflow = "hidden";
+  }
+  //Modal Hide
+  function closePopup() {
+    overlay.style.display = "none";
+    moreBtn.classList.remove("more-splash");
+    document.body.style.overflow = "";
+  }
+  moreBtn.addEventListener("click", showPopup);
+  closeBtn.addEventListener("click", closePopup);
+
+  //Modal for Description
+  let descrBtn = document.querySelectorAll(".description-btn");
+  descrBtn.forEach((btn) => {
+    btn.addEventListener("click", showPopup);
+  });
+  // for (let i = 0; i < descrBtn.length; i++) {
+  //   descrBtn[i].addEventListener("click", showPopup);
+  // }
 });
