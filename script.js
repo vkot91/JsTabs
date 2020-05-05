@@ -127,78 +127,109 @@ window.addEventListener("DOMContentLoaded", () => {
   //   descrBtn[i].addEventListener("click", showPopup);
   // }
 
-  /*Form popup*/
-  let message = {
-    loading: "Loading...",
-    succes: "Thank you! We will call you soon",
-    failure: "Something go bad :(",
-  };
+  /*Form requests with PROMISE */
+
   let form = document.querySelector(".main-form"),
     input = form.querySelectorAll("input");
-  let statusMessage = document.createElement("div");
-  statusMessage.classList.add("status");
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    form.appendChild(statusMessage);
-    let request = new XMLHttpRequest();
-    request.open("POST", "./server.php");
-    request.setRequestHeader("Content-type", "application/json; charset=utf-8");
-
-    let formData = new FormData(form);
-    let obj = {};
-    formData.forEach(function (value, key) {
-      obj[key] = value;
-    });
-    console.log(obj);
-    let json = JSON.stringify(obj);
-
-    request.send(json);
-
-    request.addEventListener("readystatechange", () => {
-      if (request.readyState < 4) {
-        statusMessage.innerHTML = message.loading;
-      } else if (request.readyState === 4 && request.status == 200) {
-        statusMessage.textContent = message.succes;
-      } else {
-        statusMessage.textContent = message.failure;
-      }
-    });
-    for (let i = 0; i < input.length; i++) {
-      input[i].value = "";
-    }
-  });
-  /*Contact form*/
   let formContact = document.querySelector("#form");
   let inputContact = formContact.querySelectorAll("input");
-  console.log(formContact, inputContact);
-  formContact.addEventListener("submit", (e) => {
-    e.preventDefault();
-    formContact.appendChild(statusMessage);
-    let request = new XMLHttpRequest();
-    request.open("POST", "./server.php");
-    request.setRequestHeader("Content-type", "application/json; charset=utf-8");
+  function sendForm(elem, input, event) {
+    event.preventDefault();
+    let message = {
+      loading: "Loading...",
+      succes: "Thank you! We will call you soon",
+      failure: "Something go bad :(",
+    };
+    let statusMessage = document.createElement("div");
+    statusMessage.classList.add("status");
+    elem.appendChild(statusMessage);
 
-    let formData = new FormData(formContact);
-    let obj = {};
-    formData.forEach(function (value, key) {
-      obj[key] = value;
-    });
-    console.log(obj);
-    let json = JSON.stringify(obj);
-    request.send(json);
+    let formData = new FormData(elem);
+    function postData(data) {
+      return new Promise((resolve, reject) => {
+        let request = new XMLHttpRequest();
+        request.open("POST", "./server.php");
+        request.setRequestHeader(
+          "Content-type",
+          "application/json; charset=utf-8"
+        );
+        request.addEventListener("readystatechange", () => {
+          if (request.readyState < 4) {
+            resolve();
+          } else if (request.readyState === 4 && request.status == 200) {
+            resolve();
+          } else {
+            reject();
+          }
+        });
 
-    request.addEventListener("readystatechange", () => {
-      if (request.readyState < 4) {
-        statusMessage.innerHTML = message.loading;
-      } else if (request.readyState === 4 && request.status == 200) {
-        statusMessage.textContent = message.succes;
-      } else {
-        statusMessage.textContent = message.failure;
-      }
-    });
-    for (let i = 0; i < input.inputContact; i++) {
-      inputContact[i].value = "";
+        let obj = {};
+        formData.forEach(function (value, key) {
+          obj[key] = value;
+        });
+        console.log(obj);
+        let json = JSON.stringify(obj);
+        request.send(json);
+
+        //request.send(data);
+      });
     }
+    function clearInput() {
+      for (let i = 0; i < input.length; i++) {
+        input[i].value = "";
+      }
+    }
+    postData(formData)
+      .then(() => {
+        statusMessage.innerHTML = message.loading;
+      })
+      .then(() => {
+        statusMessage.innerHTML = message.succes;
+      })
+      .catch(() => {
+        statusMessage.innerHTML = message.failure;
+      })
+      .then(clearInput);
+  }
+  form.addEventListener("submit", () => {
+    sendForm(form, input, event);
   });
+  formContact.addEventListener("submit", () => {
+    sendForm(formContact, inputContact, event);
+  });
+
+  /*Contact form without promise*/
+
+  // console.log(formContact, inputContact);
+  // formContact.addEventListener("submit", (e) => {
+  //   e.preventDefault();
+  //   formContact.appendChild(statusMessage);
+  //   let request = new XMLHttpRequest();
+  //   request.open("POST", "./server.php");
+  //   request.setRequestHeader("Content-type", "application/json; charset=utf-8");
+
+  //   let formData = new FormData(formContact);
+
+  /*TO SAVE DATA IN JSON FORMAT*/
+  //   let obj = {};
+  //   formData.forEach(function (value, key) {
+  //     obj[key] = value;
+  //   });
+  //   console.log(obj);
+  //   let json = JSON.stringify(obj);
+  //   request.send(json);
+
+  //   request.addEventListener("readystatechange", () => {
+  //     if (request.readyState < 4) {
+  //       statusMessage.innerHTML = message.loading;
+  //     } else if (request.readyState === 4 && request.status == 200) {
+  //       statusMessage.textContent = message.succes;
+  //     } else {
+  //       statusMessage.textContent = message.failure;
+  //     }
+  //   });
+  //   for (let i = 0; i < input.inputContact; i++) {
+  //     inputContact[i].value = "";
+  //   }
+  // });
 });
